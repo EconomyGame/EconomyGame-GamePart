@@ -1,1 +1,5 @@
-# game
+# EconomyGame
+Сетевая экономическая игра
+
+## Changelog
+...
