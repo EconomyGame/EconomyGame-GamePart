@@ -1,6 +1,6 @@
 # Window config
-WINDOW_WIDTH = 600
-WINDOW_HEIGHT = 800
+WINDOW_WIDTH = 800
+WINDOW_HEIGHT = 600
 WINDOW_CAPTION = "Economy Game"
 
 # Game config

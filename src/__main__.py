@@ -1,6 +1,7 @@
 from src.graphics.PygameGraphics import PygameGraphics
 from src.game import Game
 import src.config as config
+import pygame
 
 
 graphics = PygameGraphics(config.WINDOW_WIDTH, config.WINDOW_HEIGHT)
@@ -11,11 +12,13 @@ game = Game(graphics)
 
 running = True
 while running:
+    # TODO events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         else:
-            game.send_event(event)
+            pass
+            #game.send_event(event)
     graphics.fill_screen((0, 0, 0))
     game.update()
     game.render()

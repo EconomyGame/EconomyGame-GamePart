@@ -11,6 +11,3 @@ class AbstractGraphics:
 
     def quit(self):
         pass
-
-    def __del__(self):
-        quit()
