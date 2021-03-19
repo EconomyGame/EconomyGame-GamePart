@@ -1,4 +1,4 @@
-from src.graphics.AbstractGraphics import AbstractGraphics
+from src.graphics import AbstractGraphics
 
 
 class Game:

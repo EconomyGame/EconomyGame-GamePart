@@ -1,4 +1,4 @@
-from src.graphics.PygameGraphics import PygameGraphics
+from src.graphics import PygameGraphics
 from src.game import Game
 import src.config as config
 import pygame
