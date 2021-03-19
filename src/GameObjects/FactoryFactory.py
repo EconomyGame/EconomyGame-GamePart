@@ -2,7 +2,6 @@ from src.GameObjects.AbstractObject import AbstractObject
 
 
 class FactoryFactory:
-
     def __init__(self, game):
         self.game = game
 

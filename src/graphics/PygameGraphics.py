@@ -4,7 +4,6 @@ from .events import *
 
 
 class PygameGraphics(AbstractGraphics):
-
     def __init__(self, width, height):
         pygame.init()
         self._screen = pygame.display.set_mode((width, height))

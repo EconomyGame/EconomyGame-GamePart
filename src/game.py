@@ -12,7 +12,6 @@ class Singleton(type):
 
 
 class Game(metaclass=Singleton):  # Singleton class
-
     def __init__(self, graphics: AbstractGraphics = None):
         self.graphics = graphics
 
