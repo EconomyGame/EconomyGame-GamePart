@@ -9,5 +9,7 @@ class AbstractGraphics:
     def set_fps(self, fps):
         pass
 
+
+
     def quit(self):
         pass

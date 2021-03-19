@@ -21,3 +21,9 @@ class Game(metaclass=Singleton):  # Singleton class
 
     def render(self):
         pass
+
+    def handle_key_down(self, key):
+        pass
+
+    def handle_mouse_click(self, x, y):
+        pass

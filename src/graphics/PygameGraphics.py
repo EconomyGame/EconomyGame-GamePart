@@ -1,5 +1,6 @@
 from src.graphics.AbstractGraphics import AbstractGraphics
 import pygame
+from .events import *
 
 
 class PygameGraphics(AbstractGraphics):
@@ -20,6 +21,15 @@ class PygameGraphics(AbstractGraphics):
     def update_cycle(self):
         pygame.display.flip()
         self._timer.tick(self.fps)
+
+    def get_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                yield QuitEvent()
+            elif event.type == pygame.KEYDOWN:
+                yield KeyDownEvent(event.key)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                yield MouseClickEvent(*event.pos)
 
     def quit(self):
         pygame.quit()
