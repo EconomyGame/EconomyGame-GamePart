@@ -20,7 +20,6 @@ while running:
             game.handle_key_down(event.key)  # TODO handler of keys
         elif event.type == MOUSE_CLICK_EVENT:
             game.handle_mouse_click(event.x, event.y)
-    graphics.fill_screen((0, 0, 0))
     game.update()
     game.render()
     graphics.update_cycle()

@@ -1,4 +1,21 @@
 class AbstractGraphics:
+
+    class GUI:
+        pass
+
+    class TextGUI(GUI):
+        pass
+
+    class ButtonGUI(GUI):
+        pass
+
+    # create GUI
+    def createTextGUI(self, x, y, text, color):
+        return self.TextGUI()
+
+    def createButtonGUI(self):
+        return self.ButtonGUI()
+
     def __init__(self, width, height):
         pass
 

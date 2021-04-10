@@ -1,4 +1,5 @@
 from src.graphics import AbstractGraphics
+from src.screens import Menu
 
 
 class Singleton(type):
@@ -14,12 +15,16 @@ class Singleton(type):
 class Game(metaclass=Singleton):  # Singleton class
     def __init__(self, graphics: AbstractGraphics = None):
         self.graphics = graphics
+        self.current_screen = Menu(self)
 
     def update(self):
-        pass
+        self.current_screen.update()
 
     def render(self):
-        pass
+        self.current_screen.render()
+
+    def set_new_screen(self, screen):
+        self.current_screen = screen
 
     def handle_key_down(self, key):
         pass
