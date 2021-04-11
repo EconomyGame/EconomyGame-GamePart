@@ -10,6 +10,8 @@ class Api:
     def _create_game(self, username):
         try:
             d = requests.post("http://tp-project2021.herokuapp.com/api/v1/game_lobby/create_game", json={"username": username}).json()
+            (self.session_token, self.game_id) = self.get_authorization_data(d)
+            self.ref_code = d["game"]["ref_code"]
             return {"cfg": d["cfg"], "game": d["game"], "user": d["user"]}
         except Exception as e:
             print("exception in create_game: " + str(e))
@@ -17,7 +19,6 @@ class Api:
 
     def create_game(self, username):
         th = threading.Thread(target=self._create_game, args=(username))
-        #надо join не забыть
         th.start()
         return
 
@@ -29,9 +30,8 @@ class Api:
             print("exception in fetch_game: " + str(e))
             return {}
 
-    def fetch_game(self, session_token, game_id):
-        th = threading.Thread(target=self._fetch_game, args=(session_token, game_id))
-        #надо join не забыть
+    def fetch_game(self):
+        th = threading.Thread(target=self._fetch_game, args=(self.session_token, self.game_id))
         th.start()
         return
 
@@ -43,9 +43,8 @@ class Api:
             print("exception in update_ready: " + str(e))
             return {}
 
-    def update_ready(self, session_token, game_id):
-        th = threading.Thread(target=self._update_ready, args=(session_token, game_id))
-        #надо join не забыть
+    def update_ready(self):
+        th = threading.Thread(target=self._update_ready, args=(self.session_token, self.game_id))
         th.start()
         return
 
@@ -57,9 +56,8 @@ class Api:
             print("exception in leave_game: " + str(e))
             return {}
 
-    def leave_game(self, session_token, game_id):
-        th = threading.Thread(target=self._leave_game, args=(session_token, game_id))
-        #надо join не забыть
+    def leave_game(self):
+        th = threading.Thread(target=self._leave_game, args=(self.session_token, self.game_id))
         th.start()
         return
 
@@ -71,9 +69,8 @@ class Api:
             print("exception in join_game: " + str(e))
             return {}
 
-    def join_game(self, ref_code, username):
-        th = threading.Thread(target=self._join_game, args=(ref_code, username))
-        #надо join не забыть
+    def join_game(self, username):
+        th = threading.Thread(target=self._join_game, args=(self.ref_code, username))
         th.start()
         return
 
@@ -88,9 +85,8 @@ class Api:
             print("exception in start_game: " + str(e))
             return False
 
-    def start_game(self, session_token, game_id):
-        th = threading.Thread(target=self._start_game, args=(session_token, game_id))
-        #надо join не забыть
+    def start_game(self):
+        th = threading.Thread(target=self._start_game, args=(self.session_token, self.game_id))
         th.start()
         return
 
@@ -112,5 +108,3 @@ class Api:
             print("NO")
         print(self._leave_game(a1[0], a1[1]))
         print(self._leave_game(a2[0], a2[1]))
-
-
