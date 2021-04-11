@@ -109,12 +109,12 @@ class Api:
             print("exception in _make_factory: " + str(e))
             return {}
 
-    def make_factory(self, resource_id, coords):
+    def make_factory(self, resource_id, coords): #ID ресурса, в диапазоне [1, 4], Координаты расположения фабрики
         th = threading.Thread(target=self._make_factory, args=(resource_id, coords, self.session_token, self.game_id))
         th.start()
         return
 
-    def _select_city(self, factory_id, city_id, session_token, game_id):
+    def _select_city(self, factory_id, city_id, session_token, game_id): #соединение фабрики и города
         try:
             d = requests.post("http://tp-project2021.herokuapp.com/api/v1/game_factories/select_city",
                               json={"factory_id": factory_id, "city_id": city_id},
@@ -125,7 +125,8 @@ class Api:
             return {}
 
     def select_city(self, factory_id, city_id):
-        th = threading.Thread(target=self._select_city, args=(factory_id, city_id, self.session_token, self.game_id))
+        th = threading.Thread(target=self._select_city,
+                              args=(factory_id, city_id, self.session_token, self.game_id))
         th.start()
         return
 
@@ -160,17 +161,25 @@ class Api:
         return
 
     def test(self):
-        player1 = self._create_game("artemiy")
-        player2 = self._join_game(player1["game"]["ref_code"], "artemiy2")
-        a1 = self.get_authorization_data(player1)
-        a2 = self.get_authorization_data(player2)
-        print(self._fetch_game(a1[0], a1[1]))
-        print(self._fetch_game(a2[0], a2[1]))
-        print(self._update_ready(a1[0], a1[1]))
-        print(self._update_ready(a2[0], a2[1]))
-        if (self._start_game(a1[0], a1[1])): #без разницы кто из игроков, но только один
+        player1 = self.create_game("artemiy")
+        player2 = self.join_game("artemiy2")
+        print(self.fetch_game())
+        print(self.fetch_game())
+        print(self.update_ready())
+        print(self.update_ready())
+        if (self.start_game()): #без разницы кто из игроков, но только один
             print("YES!")
         else:
             print("NO")
-        print(self._leave_game(a1[0], a1[1]))
-        print(self._leave_game(a2[0], a2[1]))
+        self.make_factory(1, (1, 1)) #уровень фабрики и координаты
+        #print(factory)
+        #factory_id = factory["factory"]["_id"]
+        #city_id =
+        #source_id = player1["cfg"]["map"]["sources"][0]["resource_id"]
+        #print(self.select_city(factory_id, city_id)) #factory_id, city_id соединяем их
+        #print(self.select_city(factory_id, source_id)) #factory_id, source_id соединяем их
+        #print(self.upgrade_factory(factory_id)) #factory_id
+        print(self.leave_game())
+        print(self.leave_game())
+
+Api().test()
