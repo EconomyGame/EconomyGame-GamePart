@@ -1,6 +1,9 @@
 import requests
 
 class Api:
+    def __init__(self):
+        pass
+
     def create_game(self, username):
         try:
             d = requests.post("http://tp-project2021.herokuapp.com/api/v1/game_lobby/create_game", json={"username": username}).json()
