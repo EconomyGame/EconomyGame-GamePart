@@ -110,8 +110,8 @@ class Api:
                 return (False, api)
             else:
                 callback((True, api))
-                self.test_city_id = api["city"][0]["city_id"]
-                self.test_source_id = api["source"][0]["source_id"]
+                self.test_city_id = api["game"]["cities"][0]["_id"]
+                self.test_source_id = api["game"]["sources"][0]["_id"]
                 return (True, api)
         except Exception as e:
             print("exception in _start_game: " + str(e))
@@ -142,7 +142,7 @@ class Api:
 
     def make_factory(self, username, resource_id, coords, callback=lambda x: None): #ID ресурса, в диапазоне [1, 4], Координаты расположения фабрики
         th = threading.Thread(target=self._make_factory,
-                              args=(resource_id, coords, self.session_token, self.game_id, callback))
+                              args=(resource_id, coords, self.session_token[username], self.game_id, callback))
         th.start()
         th.join()
         return
@@ -214,6 +214,7 @@ class Api:
             print("NO")
 
     def test(self):
+        #Для тестирования во все функции был добален join, а также были добавлены test_factory_id, test_city_id, test_source_id
         self.create_game("artemiy", self.cb)
         print("create!")
         self.join_game("artemiy2", self.cb)
