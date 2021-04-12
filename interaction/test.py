@@ -238,4 +238,4 @@ class Api:
         self.leave_game("artemiy2", self.cb)
         print("leave_game!")
 
-Api().test()
+#Api().test()
