@@ -1,185 +1,240 @@
 import requests
 import threading
-import time
 
 
 class Api:
+
     def __init__(self):
-        pass
+        self.session_token = dict()
 
 
-    def _create_game(self, username):
+    def _create_game(self, username, callback):
         try:
             d = requests.post("http://tp-project2021.herokuapp.com/api/v1/game_lobby/create_game",
                               json={"username": username}).json()
-            (self.session_token, self.game_id, self.ref_code) = self.get_authorization_data(d)
-            return {"cfg": d["cfg"], "game": d["game"], "user": d["user"]}
+            (self.session_token[username], self.game_id, self.ref_code) = self.get_authorization_data(d)
+            api = {"cfg": d["cfg"], "game": d["game"], "user": d["user"]}
+            callback(api)
+            return api
         except Exception as e:
             print("exception in _create_game: " + str(e))
             return {}
 
-    def create_game(self, username):
-        th = threading.Thread(target=self._create_game, args=(username))
+    def create_game(self, username, callback=lambda x: None):
+        th = threading.Thread(target=self._create_game,
+                              args=(username, callback))
         th.start()
+        th.join()
         return
 
-    def _fetch_game(self, session_token, game_id): #выводит информацию по игре
+    def _fetch_game(self, session_token, game_id, callback): #выводит информацию по игре
         try:
             d = requests.get("http://tp-project2021.herokuapp.com/api/v1/game_lobby/fetch_game",
                              headers={"Authorization":session_token, "Game":game_id}).json()
-            return {"game": d["game"], "user": d["user"]}
+            api = {"game": d["game"], "user": d["user"]}
+            callback(api)
+            return api
         except Exception as e:
             print("exception in _fetch_game: " + str(e))
             return {}
 
-    def fetch_game(self):
-        th = threading.Thread(target=self._fetch_game, args=(self.session_token, self.game_id))
+    def fetch_game(self, username, callback=lambda x: None):
+        th = threading.Thread(target=self._fetch_game,
+                              args=(self.session_token[username], self.game_id, callback))
         th.start()
+        th.join()
         return
 
-    def _update_ready(self, session_token, game_id):
+    def _update_ready(self, session_token, game_id, callback):
         try:
             d = requests.get("http://tp-project2021.herokuapp.com/api/v1/game_lobby/update_ready",
                              headers={"Authorization":session_token, "Game":game_id}).json()
-            return {"game": d["game"], "user": d["user"]}
+            api = {"game": d["game"], "user": d["user"]}
+            callback(api)
+            return api
         except Exception as e:
             print("exception in _update_ready: " + str(e))
             return {}
 
-    def update_ready(self):
-        th = threading.Thread(target=self._update_ready, args=(self.session_token, self.game_id))
+    def update_ready(self, username, callback=lambda x: None):
+        th = threading.Thread(target=self._update_ready,
+                              args=(self.session_token[username], self.game_id, callback))
         th.start()
+        th.join()
         return
 
-    def _leave_game(self, session_token, game_id):
+    def _leave_game(self, session_token, game_id, callback):
         try:
             d = requests.get("http://tp-project2021.herokuapp.com/api/v1/game_lobby/leave_game",
                              headers={"Authorization":session_token, "Game":game_id}).json()
-            return {"game": d["game"]}
+            api = {"game": d["game"]}
+            callback(api)
+            return api
         except Exception as e:
             print("exception in _leave_game: " + str(e))
             return {}
 
-    def leave_game(self):
-        th = threading.Thread(target=self._leave_game, args=(self.session_token, self.game_id))
+    def leave_game(self, username, callback=lambda x: None):
+        th = threading.Thread(target=self._leave_game,
+                              args=(self.session_token[username], self.game_id, callback))
         th.start()
+        th.join()
         return
 
-    def _join_game(self, ref_code, username):
+    def _join_game(self, ref_code, username, callback):
         try:
             d = requests.get("http://tp-project2021.herokuapp.com/api/v1/game_lobby/join_game",
                              params={"ref_code":ref_code, "username":username}).json()
-            return {"cfg": d["cfg"], "game": d["game"], "user": d["user"]}
+            self.session_token[username] = d["user"]["session_token"]
+            api = {"cfg": d["cfg"], "game": d["game"], "user": d["user"]}
+            callback(api)
+            return api
         except Exception as e:
             print("exception in _join_game: " + str(e))
             return {}
 
-    def join_game(self, username):
-        th = threading.Thread(target=self._join_game, args=(self.ref_code, username))
+    def join_game(self, username, callback=lambda x: None):
+        th = threading.Thread(target=self._join_game,
+                              args=(self.ref_code, username, callback))
         th.start()
+        th.join()
         return
 
-    def _start_game(self, session_token, game_id): #подключение к игре
+    def _start_game(self, session_token, game_id, callback): #подключение к игре
         try:
             d = requests.get("http://tp-project2021.herokuapp.com/api/v1/game_lobby/start_game",
                              headers={"Authorization":session_token, "Game":game_id}).json()
+            api = d
             if ("message" in d):
-                return False
+                callback((False, api))
+                return (False, api)
             else:
-                return True
+                callback((True, api))
+                self.test_city_id = api["city"][0]["city_id"]
+                self.test_source_id = api["source"][0]["source_id"]
+                return (True, api)
         except Exception as e:
             print("exception in _start_game: " + str(e))
             return False
 
-    def start_game(self):
-        th = threading.Thread(target=self._start_game, args=(self.session_token, self.game_id))
+    def start_game(self, username, callback=lambda x: None):
+        th = threading.Thread(target=self._start_game,
+                              args=(self.session_token[username], self.game_id, callback))
         th.start()
+        th.join()
         return
 
     def get_authorization_data(self, d):
         return (d["user"]["session_token"], d["game"]["_id"], d["game"]["ref_code"])
 
-    def _make_factory(self, resource_id, coords, session_token, game_id):
+    def _make_factory(self, resource_id, coords, session_token, game_id, callback):
         try:
             d = requests.post("http://tp-project2021.herokuapp.com/api/v1/game_factories/make_factory",
                               json={"resource_id": resource_id, "coords": coords},
                               headers={"Authorization":session_token, "Game":game_id}).json()
-            return d
+            api = d
+            callback(api)
+            self.test_factory_id = api["factory"]["_id"]
+            return api
         except Exception as e:
             print("exception in _make_factory: " + str(e))
             return {}
 
-    def make_factory(self, resource_id, coords): #ID ресурса, в диапазоне [1, 4], Координаты расположения фабрики
-        th = threading.Thread(target=self._make_factory, args=(resource_id, coords, self.session_token, self.game_id))
+    def make_factory(self, username, resource_id, coords, callback=lambda x: None): #ID ресурса, в диапазоне [1, 4], Координаты расположения фабрики
+        th = threading.Thread(target=self._make_factory,
+                              args=(resource_id, coords, self.session_token, self.game_id, callback))
         th.start()
+        th.join()
         return
 
-    def _select_city(self, factory_id, city_id, session_token, game_id): #соединение фабрики и города
+    def _select_city(self, factory_id, city_id, session_token, game_id, callback): #соединение фабрики и города
         try:
             d = requests.post("http://tp-project2021.herokuapp.com/api/v1/game_factories/select_city",
                               json={"factory_id": factory_id, "city_id": city_id},
                               headers={"Authorization":session_token, "Game":game_id}).json()
-            return d
+            api = d
+            callback(api)
+            return api
         except Exception as e:
             print("exception in _select_city: " + str(e))
             return {}
 
-    def select_city(self, factory_id, city_id):
+    def select_city(self, username, factory_id, city_id, callback=lambda x: None):
         th = threading.Thread(target=self._select_city,
-                              args=(factory_id, city_id, self.session_token, self.game_id))
+                              args=(factory_id, city_id, self.session_token[username], self.game_id, callback))
         th.start()
+        th.join()
         return
 
-    def _select_source(self, factory_id, source_id, session_token, game_id):
+    def _select_source(self, factory_id, source_id, session_token, game_id, callback):
         try:
             d = requests.post("http://tp-project2021.herokuapp.com/api/v1/game_factories/select_source",
                               json={"factory_id": factory_id, "source_id": source_id},
                               headers={"Authorization":session_token, "Game":game_id}).json()
-            return d
+            api = d
+            callback(api)
+            return api
         except Exception as e:
             print("exception in _select_source: " + str(e))
             return {}
 
-    def select_source(self, factory_id, source_id):
-        th = threading.Thread(target=self._select_source, args=(factory_id, source_id, self.session_token, self.game_id))
+    def select_source(self, username, factory_id, source_id, callback=lambda x: None):
+        th = threading.Thread(target=self._select_source,
+                              args=(factory_id, source_id, self.session_token[username], self.game_id, callback))
         th.start()
+        th.join()
         return
 
-    def _upgrade_factory(self, factory_id, session_token, game_id):
+    def _upgrade_factory(self, factory_id, session_token, game_id, callback):
         try:
             d = requests.post("http://tp-project2021.herokuapp.com/api/v1/game_factories/upgrade_factory",
                               json={"factory_id": factory_id},
                               headers={"Authorization":session_token, "Game":game_id}).json()
-            return d
+            api = d
+            callback(api)
+            return api
         except Exception as e:
             print("exception in _upgrade_factory: " + str(e))
             return {}
 
-    def upgrade_factory(self, factory_id):
-        th = threading.Thread(target=self._upgrade_factory, args=(factory_id, self.session_token, self.game_id))
+    def upgrade_factory(self, username, factory_id, callback=lambda x: None):
+        th = threading.Thread(target=self._upgrade_factory,
+                              args=(factory_id, self.session_token[username], self.game_id, callback))
         th.start()
+        th.join()
         return
 
-    def test(self):
-        player1 = self.create_game("artemiy")
-        player2 = self.join_game("artemiy2")
-        print(self.fetch_game())
-        print(self.fetch_game())
-        print(self.update_ready())
-        print(self.update_ready())
-        if (self.start_game()): #без разницы кто из игроков, но только один
+    def cb(self, api):
+        print(api)
+
+    def cb_start_game(self, api):
+        if (api[0]): #без разницы кто из игроков, но только один
             print("YES!")
         else:
             print("NO")
-        self.make_factory(1, (1, 1)) #уровень фабрики и координаты
-        #print(factory)
-        #factory_id = factory["factory"]["_id"]
-        #city_id =
-        #source_id = player1["cfg"]["map"]["sources"][0]["resource_id"]
-        #print(self.select_city(factory_id, city_id)) #factory_id, city_id соединяем их
-        #print(self.select_city(factory_id, source_id)) #factory_id, source_id соединяем их
-        #print(self.upgrade_factory(factory_id)) #factory_id
-        print(self.leave_game())
-        print(self.leave_game())
+
+    def test(self):
+        self.create_game("artemiy", self.cb)
+        print("create!")
+        self.join_game("artemiy2", self.cb)
+        print("join!")
+        self.fetch_game("artemiy", self.cb)
+        print("fetch!")
+        self.update_ready("artemiy", self.cb)
+        self.update_ready("artemiy2", self.cb)
+        print("update!")
+        self.start_game("artemiy", self.cb_start_game) #можно запускать игру на ком угодно
+        print("start or no")
+        self.make_factory("artemiy", 1, [1, 1], self.cb) #уровень фабрики и координаты
+        print("make_factory!")
+        self.select_city("artemiy", self.test_factory_id, self.test_city_id, self.cb) #factory_id, city_id соединяем их
+        print("select_city!")
+        self.select_source("artemiy", self.test_factory_id, self.test_source_id, self.cb) #factory_id, source_id соединяем их
+        print("select_source!")
+        self.upgrade_factory("artemiy", self.test_factory_id, self.cb) #factory_id
+        print("upgrade_factory!")
+        self.leave_game("artemiy", self.cb)
+        self.leave_game("artemiy2", self.cb)
+        print("leave_game!")
 
 Api().test()
