@@ -1,8 +1,8 @@
 # Constants
 BASIC_EVENT = 0
-QUIT_EVENT = 0
-KEY_DOWN_EVENT = 0
-MOUSE_CLICK_EVENT = 0
+QUIT_EVENT = 1
+KEY_DOWN_EVENT = 2
+MOUSE_CLICK_EVENT = 3
 
 
 class BasicEvent:
@@ -19,8 +19,9 @@ class KeyDownEvent(BasicEvent):
 
     type = KEY_DOWN_EVENT
 
-    def __init__(self, key):
+    def __init__(self, key, unicode):
         self.key = key
+        self.unicode = unicode
 
 
 class MouseClickEvent(BasicEvent):

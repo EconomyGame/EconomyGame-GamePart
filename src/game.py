@@ -26,8 +26,8 @@ class Game(metaclass=Singleton):  # Singleton class
     def set_new_screen(self, screen):
         self.current_screen = screen
 
-    def handle_key_down(self, key):
-        pass
+    def handle_key_down(self, event):
+        self.current_screen.handle_key_down(event)
 
     def handle_mouse_click(self, x, y):
-        pass
+        self.current_screen.handle_mouse_click(x, y)

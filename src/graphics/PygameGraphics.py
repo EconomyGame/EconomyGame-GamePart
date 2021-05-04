@@ -1,3 +1,6 @@
+from os import environ
+environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
+
 import pygame
 import src.config as config
 from src.graphics.AbstractGraphics import AbstractGraphics
@@ -5,7 +8,6 @@ from .events import *
 
 
 class PygameGraphics(AbstractGraphics):
-
     class GUI:
 
         def __init__(self, screen, x, y, width, height):
@@ -20,8 +22,8 @@ class PygameGraphics(AbstractGraphics):
 
     class TextGUI(GUI):
 
-        def __init__(self, screen, x, y, width, height, text, color):
-            self.font = pygame.font.Font(config.TEXT_FONT, 100)
+        def __init__(self, screen, x, y, width, height, text, color, size=100):
+            self.font = pygame.font.Font(config.TEXT_FONT, size)
             self.label = self.font.render(text, True, color)
             super().__init__(screen, x, y, width, height)
 
@@ -31,24 +33,74 @@ class PygameGraphics(AbstractGraphics):
         def handle_click(self, pos_x, pos_y):
             pass
 
+        def handle_key_down(self, event):
+            pass
+
     class ButtonGUI(GUI):
 
-        def __init__(self, screen, x, y, width, height, label):
+        def __init__(self, screen, x, y, width, height, label, callback):
             self.label = label
+            self.callback = callback
+            self.font = pygame.font.Font(config.TEXT_FONT, 30)
+            self.label_obj = self.font.render(label, True, config.BUTTON_TEXT_COLOR)
             super().__init__(screen, x, y, width, height)
 
         def render(self):
-            pass
+            pygame.draw.rect(self.screen, config.BUTTON_BODY_COLOR, (self.x, self.y, self.width, self.height))
+            pygame.draw.rect(self.screen, config.BUTTON_BORDER_COLOR, (self.x, self.y, self.width, self.height), 3)
+            self.screen.blit(self.label_obj, (self.x + 4, self.y + 4))
 
         def handle_click(self, pos_x, pos_y):
+            if self.x <= pos_x <= self.x + self.width and self.y <= pos_y <= self.y + self.height:
+                self.callback()
+
+        def handle_key_down(self, event):
             pass
 
-    # create GUI
-    def createTextGUI(self, x, y, text, color):
-        return self.TextGUI(self._screen, x, y, 0, 0, text, color)
+    class InputGUI(GUI):
 
-    def createButtonGUI(self):
-        pass
+        def __init__(self, screen, x, y, width, height, callback):
+            self.callback = callback
+            self.text = ""
+            self.font = pygame.font.Font(config.TEXT_FONT, 26)
+            self.text_obj = self.font.render(self.text, True, config.INPUT_TEXT_COLOR)
+            self.active = False
+            super().__init__(screen, x, y, width, height)
+
+        def render(self):
+            pygame.draw.rect(self.screen, config.INPUT_BODY_COLOR, (self.x, self.y, self.width, self.height))
+            if self.active:
+                pygame.draw.rect(self.screen, config.INPUT_BORDER_COLOR, (self.x, self.y, self.width, self.height), 3)
+            self.screen.blit(self.text_obj, (self.x + 4, self.y + 4))
+
+        def handle_click(self, pos_x, pos_y):
+            if self.x <= pos_x <= self.x + self.width and self.y <= pos_y <= self.y + self.height:
+                self.active = True
+            else:
+                self.active = False
+
+        def handle_key_down(self, event):
+            if not self.active:
+                return
+            if event.key == pygame.K_RETURN:
+                self.callback(self.text)
+            elif event.key == pygame.K_BACKSPACE:
+                if self.text:
+                    self.text = self.text[:-1]
+                    self.text_obj = self.font.render(self.text, True, config.INPUT_TEXT_COLOR)
+            else:
+                self.text += event.unicode
+                self.text_obj = self.font.render(self.text, True, config.INPUT_TEXT_COLOR)
+
+    # create GUI
+    def createTextGUI(self, x, y, text, color, size=100):
+        return self.TextGUI(self._screen, x, y, 0, 0, text, color, size=size)
+
+    def createButtonGUI(self, x, y, width, height, label, callback):
+        return self.ButtonGUI(self._screen, x, y, width, height, label, callback)
+
+    def createInputGUI(self, x, y, width, height, callback):
+        return self.InputGUI(self._screen, x, y, width, height, callback)
 
     def __init__(self, width, height):
         pygame.init()
@@ -72,7 +124,7 @@ class PygameGraphics(AbstractGraphics):
             if event.type == pygame.QUIT:
                 yield QuitEvent()
             elif event.type == pygame.KEYDOWN:
-                yield KeyDownEvent(event.key)
+                yield KeyDownEvent(event.key, event.unicode)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 yield MouseClickEvent(*event.pos)
 

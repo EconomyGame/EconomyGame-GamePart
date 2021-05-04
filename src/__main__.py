@@ -17,7 +17,7 @@ while running:
         if event.type == QUIT_EVENT:
             running = False  # TODO close connection, etc...
         elif event.type == KEY_DOWN_EVENT:
-            game.handle_key_down(event.key)  # TODO handler of keys
+            game.handle_key_down(event)  # TODO handler of keys
         elif event.type == MOUSE_CLICK_EVENT:
             game.handle_mouse_click(event.x, event.y)
     game.update()
