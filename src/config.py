@@ -5,3 +5,20 @@ WINDOW_CAPTION = "Economy Game"
 
 # Game config
 FPS = 30
+
+# Menu config
+MENU_BACKGROUND_COLOR = (100, 100, 100)
+MENU_TEXT_COLOR = (255, 255, 255)
+
+# GUI config
+TEXT_FONT = None
+
+# GUI Button config
+BUTTON_TEXT_COLOR = (0, 0, 0)
+BUTTON_BODY_COLOR = (255, 255, 255)
+BUTTON_BORDER_COLOR = (50, 50, 50)
+
+# GUI Input config
+INPUT_TEXT_COLOR = (0, 0, 0)
+INPUT_BODY_COLOR = (255, 255, 255)
+INPUT_BORDER_COLOR = (50, 50, 50)
