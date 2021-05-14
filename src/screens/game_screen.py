@@ -2,7 +2,7 @@ from . import AbstractScreen, CreateScreen, JoinScreen
 import src.config as config
 
 
-class Menu(AbstractScreen):
+class GameScreen(AbstractScreen):
 
     def __init__(self, game):
         super().__init__(game)

@@ -1,4 +1,5 @@
 from src.graphics import AbstractGraphics
+from src.interaction import Api, start_thread
 from src.screens import Menu
 
 
@@ -16,12 +17,19 @@ class Game(metaclass=Singleton):  # Singleton class
     def __init__(self, graphics: AbstractGraphics = None):
         self.graphics = graphics
         self.current_screen = Menu(self)
+        self.api = Api(self)
+        start_thread(self.handle_update)
+
 
     def update(self):
         self.current_screen.update()
 
     def render(self):
         self.current_screen.render()
+
+    def handle_update(self, data):
+        print("MY HANDLER")
+        print(data)
 
     def set_new_screen(self, screen):
         self.current_screen = screen

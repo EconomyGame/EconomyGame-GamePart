@@ -36,6 +36,26 @@ class PygameGraphics(AbstractGraphics):
         def handle_key_down(self, event):
             pass
 
+    class TextListGUI(GUI):
+
+        def __init__(self, screen, x, y, width, height, text_list, color, size):
+            self.texts = []
+            current_y = y
+            for text in text_list:
+                self.texts.append(PygameGraphics.TextGUI(screen, x, current_y, 0, 0, text, color, size))
+                current_y += 20
+            super().__init__(screen, x, y, width, height)
+
+        def render(self):
+            for text in self.texts:
+                text.render()
+
+        def handle_click(self, pos_x, pos_y):
+            pass
+
+        def handle_key_down(self, event):
+            pass
+
     class ButtonGUI(GUI):
 
         def __init__(self, screen, x, y, width, height, label, callback):
@@ -95,6 +115,9 @@ class PygameGraphics(AbstractGraphics):
     # create GUI
     def createTextGUI(self, x, y, text, color, size=100):
         return self.TextGUI(self._screen, x, y, 0, 0, text, color, size=size)
+
+    def createTexListGUI(self, x, y, text_list, color, size=30):
+        return self.TextListGUI(self._screen, x, y, 0, 0, text_list, color, size=30)
 
     def createButtonGUI(self, x, y, width, height, label, callback):
         return self.ButtonGUI(self._screen, x, y, width, height, label, callback)
