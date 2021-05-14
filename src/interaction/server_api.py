@@ -97,9 +97,9 @@ class Api:
             print("exception in _join_game: " + str(e))
             return {}
 
-    def join_game(self, username, callback=lambda x: None):
+    def join_game(self, username, ref_code, callback=lambda x: None):
         th = threading.Thread(target=self._join_game,
-                              args=(self.ref_code, username, callback))
+                              args=(ref_code, username, callback))
         th.start()
         return
 

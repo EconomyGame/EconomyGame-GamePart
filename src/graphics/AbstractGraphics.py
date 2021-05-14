@@ -48,3 +48,9 @@ class AbstractGraphics:
 
     def fill_screen(self, color):
         pass
+
+    def draw_line(self, color, start_pos, end_pos):
+        pass
+
+    def draw_rect(self, color, x, y, width, height):
+        pass

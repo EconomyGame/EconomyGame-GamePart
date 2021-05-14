@@ -25,10 +25,18 @@ class PygameGraphics(AbstractGraphics):
         def __init__(self, screen, x, y, width, height, text, color, size=100):
             self.font = pygame.font.Font(config.TEXT_FONT, size)
             self.label = self.font.render(text, True, color)
+            self.text = text
+            self.color = color
             super().__init__(screen, x, y, width, height)
 
         def render(self):
             self.screen.blit(self.label, (self.x, self.y))
+
+        def set_text(self, text):
+            if text == self.text:
+                return
+            self.text = text
+            self.label = self.font.render(text, True, self.color)
 
         def handle_click(self, pos_x, pos_y):
             pass
@@ -39,12 +47,27 @@ class PygameGraphics(AbstractGraphics):
     class TextListGUI(GUI):
 
         def __init__(self, screen, x, y, width, height, text_list, color, size):
+            self.color = color
+            self.size = size
             self.texts = []
             current_y = y
             for text in text_list:
                 self.texts.append(PygameGraphics.TextGUI(screen, x, current_y, 0, 0, text, color, size))
                 current_y += 20
             super().__init__(screen, x, y, width, height)
+
+        def set_texts(self, text_list):
+            if self.texts == text_list:
+                return
+            if len(self.texts) == len(text_list):
+                for i, text in enumerate(self.texts):
+                    text.set_text(text_list[i])
+                return
+            self.texts = []
+            current_y = self.y
+            for text in text_list:
+                self.texts.append(PygameGraphics.TextGUI(self.screen, self.x, current_y, 0, 0, text, self.color, self.size))
+                current_y += 20
 
         def render(self):
             for text in self.texts:
@@ -156,3 +179,9 @@ class PygameGraphics(AbstractGraphics):
 
     def fill_screen(self, color):
         self._screen.fill(color)
+
+    def draw_line(self, color, start_pos, end_pos):
+        pygame.draw.line(self._screen, color, start_pos, end_pos)
+
+    def draw_rect(self, color, x, y, width, height):
+        pygame.draw.rect(self._screen, color, (x, y, width, height))

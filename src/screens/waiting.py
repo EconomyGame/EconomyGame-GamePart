@@ -1,4 +1,4 @@
-from src.screens import AbstractScreen
+from src.screens import AbstractScreen, GameScreen
 import src.config as config
 
 
@@ -8,14 +8,23 @@ class Waiting(AbstractScreen):
         super().__init__(game)
         self.set_gui()
 
+    def _start_game(self):
+        self.game.api.start_game(self.game.users[0])
+        self.game.current_screen = GameScreen(self.game)
+
     def set_gui(self):
         self.objects.append(self.graphics.createTextGUI(150, 100, "Зал ожидания", config.MENU_TEXT_COLOR))
-        self.objects.append(self.graphics.createTextGUI(150, 200, "Другие игроки могут подключиться по коду: kekseva", config.MENU_TEXT_COLOR, size=30))
+        self.objects.append(self.graphics.createTextGUI(150, 200, f"Другие игроки могут подключиться по коду: {self.game.ref_code}", config.MENU_TEXT_COLOR, size=30))
+        self.objects.append(self.graphics.createTexListGUI(150, 300, [], config.MENU_TEXT_COLOR))
+        self.objects.append(self.graphics.createButtonGUI(300, 300, 150, 30, "Начать игру", self._start_game))
         # self.objects.append(self.graphics.createButtonGUI(315, 200, 145, 30, "Создать игру", create_game))
         # self.objects.append(self.graphics.createButtonGUI(290, 250, 225, 30, "Подключиться к игре", join_game))
 
     def update(self):
-        pass
+        self.objects[1].set_text(f"Другие игроки могут подключиться по коду: {self.game.ref_code}")
+        self.objects[2].set_texts(self.game.users)
+        if len(self.game.users) == 4 and len(self.objects) < 4:
+            self.objects.append(self.graphics.createButtonGUI(300, 300, 150, 30, "Начать игру", self._start_game))
 
     def render(self):
         self.graphics.fill_screen(config.MENU_BACKGROUND_COLOR)

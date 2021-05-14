@@ -1,4 +1,4 @@
-from . import AbstractScreen, Waiting
+from . import AbstractScreen, JoinScreenCode
 import src.config as config
 
 
@@ -9,7 +9,7 @@ class JoinScreen(AbstractScreen):
         self.set_gui()
 
     def _join_game(self, name):
-        self.game.current_screen = Waiting(self.game)
+        self.game.current_screen = JoinScreenCode(self.game, name)
 
     def set_gui(self):
         self.objects.append(self.graphics.createTextGUI(200, 100, "Введите имя", config.MENU_TEXT_COLOR))
