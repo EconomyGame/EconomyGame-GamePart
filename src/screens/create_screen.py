@@ -9,6 +9,7 @@ class CreateScreen(AbstractScreen):
         self.set_gui()
 
     def _create_game(self, name):
+        self.game.my_username = name
         self.game.api.create_game(name)
         self.game.current_screen = Waiting(self.game)
 

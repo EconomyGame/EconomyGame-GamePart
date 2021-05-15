@@ -9,7 +9,7 @@ class Waiting(AbstractScreen):
         self.set_gui()
 
     def _start_game(self):
-        self.game.api.start_game(self.game.users[0])
+        self.game.api.start_game(self.game.my_username)
         self.game.current_screen = GameScreen(self.game)
 
     def set_gui(self):

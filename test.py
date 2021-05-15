@@ -1,6 +1,6 @@
 import requests
 
-ref_code = "Ks8gw"
+ref_code = "w893y"
 
 d = requests.get("http://tp-project2021.herokuapp.com/api/v1/game_lobby/join_game",
                              params={"ref_code":ref_code, "username":"fake1"}).json()

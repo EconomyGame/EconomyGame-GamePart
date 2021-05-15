@@ -140,7 +140,7 @@ class PygameGraphics(AbstractGraphics):
         return self.TextGUI(self._screen, x, y, 0, 0, text, color, size=size)
 
     def createTexListGUI(self, x, y, text_list, color, size=30):
-        return self.TextListGUI(self._screen, x, y, 0, 0, text_list, color, size=30)
+        return self.TextListGUI(self._screen, x, y, 0, 0, text_list, color, size)
 
     def createButtonGUI(self, x, y, width, height, label, callback):
         return self.ButtonGUI(self._screen, x, y, width, height, label, callback)

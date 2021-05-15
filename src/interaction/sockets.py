@@ -18,12 +18,11 @@ def connect():
 @sio.event
 def update_game(data):
     callback_func(data)
-    print('message received with ', data)
 
 
 @sio.event
 def disconnect():
-    print('disconnected from server')
+    pass
 
 
 def run_loop(callback):
@@ -34,7 +33,7 @@ def run_loop(callback):
             sio.connect('http://tp-project2021.herokuapp.com')
             sio.wait()
         except Exception as e:
-            print(e)
+            # print(e)
             sio.disconnect()
 
 

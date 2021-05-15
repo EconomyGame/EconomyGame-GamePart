@@ -12,8 +12,16 @@ class City:
 
 class Factory:
 
-    def __init__(self, *args):
-        pass
+    def __init__(self, _id, x, y, city_id, coef, level, resource_id, source_id, username):
+        self._id = _id
+        self.x = x
+        self.y = y
+        self.city_id = city_id
+        self.coef = coef
+        self.level = level
+        self.resource_id = resource_id
+        self.source_id = source_id
+        self.username = username
 
 
 class Source:

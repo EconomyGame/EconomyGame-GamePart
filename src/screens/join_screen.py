@@ -9,6 +9,7 @@ class JoinScreen(AbstractScreen):
         self.set_gui()
 
     def _join_game(self, name):
+        self.game.my_username = name
         self.game.current_screen = JoinScreenCode(self.game, name)
 
     def set_gui(self):

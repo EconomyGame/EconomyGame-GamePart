@@ -109,7 +109,6 @@ class Api:
                 callback((False, api))
                 return (False, api)
             else:
-                self.game.progress_update(api)
                 callback((True, api))
                 self.test_city_id = api["game"]["cities"][0]["_id"]
                 self.test_source_id = api["game"]["sources"][0]["_id"]
@@ -133,9 +132,7 @@ class Api:
                               json={"resource_id": resource_id, "coords": coords},
                               headers={"Authorization":session_token, "Game":game_id}).json()
             api = d
-            self.game.progress_update(api)
             callback(api)
-            self.test_factory_id = api["factory"]["_id"]
             return api
         except Exception as e:
             print("exception in _make_factory: " + str(e))
@@ -153,7 +150,6 @@ class Api:
                               json={"factory_id": factory_id, "city_id": city_id},
                               headers={"Authorization":session_token, "Game":game_id}).json()
             api = d
-            self.game.progress_update(api)
             callback(api)
             return api
         except Exception as e:
@@ -172,7 +168,6 @@ class Api:
                               json={"factory_id": factory_id, "source_id": source_id},
                               headers={"Authorization":session_token, "Game":game_id}).json()
             api = d
-            self.game.progress_update(api)
             callback(api)
             return api
         except Exception as e:
@@ -191,7 +186,6 @@ class Api:
                               json={"factory_id": factory_id},
                               headers={"Authorization":session_token, "Game":game_id}).json()
             api = d
-            self.game.progress_update(api)
             callback(api)
             return api
         except Exception as e:
