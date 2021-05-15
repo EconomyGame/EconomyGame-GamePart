@@ -7,16 +7,18 @@ class Api:
     def __init__(self, game):
         self.game = game
         self.session_token = dict()
+        self.game_id = None
+        self.ref_code = None
 
     def _create_game(self, username, callback):
         try:
             d = requests.post("http://tp-project2021.herokuapp.com/api/v1/game_lobby/create_game",
                               json={"username": username}).json()
-            (self.session_token[username], self.game_id, self.ref_code) = self.get_authorization_data(d)
-            api = {"cfg": d["cfg"], "game": d["game"], "user": d["user"]}
-            self.game.handle_update(api)
-            callback(api)
-            return api
+            self.session_token[username], self.game_id, self.ref_code = self.get_authorization_data(d)
+            # api = {"cfg": d["cfg"], "game": d["game"], "user": d["user"]}
+            self.game.handle_update(d)
+            callback(d)
+            return d
         except Exception as e:
             print("exception in _create_game: " + str(e))
             return {}
@@ -86,6 +88,7 @@ class Api:
             d = requests.get("http://tp-project2021.herokuapp.com/api/v1/game_lobby/join_game",
                              params={"ref_code":ref_code, "username":username}).json()
             self.session_token[username] = d["user"]["session_token"]
+            self.game_id, self.ref_code = d["game"]["_id"], ref_code
             api = {"cfg": d["cfg"], "game": d["game"], "user": d["user"]}
             self.game.handle_update(api)
             callback(api)
@@ -182,10 +185,12 @@ class Api:
 
     def _upgrade_factory(self, factory_id, session_token, game_id, callback):
         try:
+            print(factory_id, session_token, game_id)
             d = requests.post("http://tp-project2021.herokuapp.com/api/v1/game_factories/upgrade_factory",
                               json={"factory_id": factory_id},
                               headers={"Authorization":session_token, "Game":game_id}).json()
             api = d
+            print(api)
             callback(api)
             return api
         except Exception as e:

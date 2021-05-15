@@ -50,6 +50,14 @@ class GameScreen(AbstractScreen):
         source_id = self.game.map[x][y]._id
         self.game.api.select_source(self.game.my_username, obj._id, source_id)
 
+    def _upgrade_factory(self):
+        if self.current_cell is None:
+            return
+        obj = self.game.map[self.current_cell[0]][self.current_cell[1]]
+        if not isinstance(obj, Factory):
+            return
+        self.game.api.upgrade_factory(self.game.my_username, obj._id)
+
     def set_gui(self):
         self.objects.append(self.graphics.createTexListGUI(450, 430, [], (255, 255, 255), 20))
         self.objects.append(self.graphics.createButtonGUI(50, 430, 90, 30, "Coal", self._build_factory_coal))
@@ -61,9 +69,11 @@ class GameScreen(AbstractScreen):
         self.objects.append(self.graphics.createButtonGUI(140, 430, 90, 30, "Gold", self._build_factory_gold))
         self.objects.append(self.graphics.createButtonGUI(230, 430, 90, 30, "Iron", self._build_factory_iron))
         self.objects.append(self.graphics.createButtonGUI(320, 430, 90, 30, "Diamond", self._build_factory_diamond))
+        self.objects.append(self.graphics.createButtonGUI(260, 565, 180, 30, "Upgrade Factory", self._upgrade_factory))
+
 
     def update(self):
-        self.objects[2].set_text(f"${self.game.balance}")
+        self.objects[2].set_text(f"${round(self.game.balance, 2)}")
 
     def render(self):
         self.graphics.fill_screen(config.MENU_BACKGROUND_COLOR)
@@ -99,10 +109,10 @@ class GameScreen(AbstractScreen):
             obj = self.game.map[x // 40][y // 40]
             if isinstance(obj, City):
                 self.objects[0].set_texts([f"Город {obj.name}", f"ID: {obj._id}", f"Coords: {obj.x} {obj.y}",
-                                           f"Coal: Level {obj.resource_levels['coal']}, Stage: {obj.resource_stage['coal']}, Delta: {round(obj.resource_delta['coal'], 2)}",
-                                           f"Gold: Level {obj.resource_levels['gold']}, Stage: {obj.resource_stage['gold']}, Delta: {round(obj.resource_delta['gold'], 2)}",
-                                           f"Diamond: Level {obj.resource_levels['diamond']}, Stage: {obj.resource_stage['diamond']}, Delta: {round(obj.resource_delta['diamond'], 2)}",
-                                           f"Iron: Level {obj.resource_levels['iron']}, Stage: {obj.resource_stage['iron']}, Delta: {round(obj.resource_delta['iron'], 2)}"
+                                           f"Coal: Level {obj.resource_levels['coal']}, Stage: {round(obj.resource_stage['coal'], 2)}, Delta: {round(obj.resource_delta['coal'], 2)}",
+                                           f"Gold: Level {obj.resource_levels['gold']}, Stage: {round(obj.resource_stage['gold'], 2)}, Delta: {round(obj.resource_delta['gold'], 2)}",
+                                           f"Diamond: Level {obj.resource_levels['diamond']}, Stage: {round(obj.resource_stage['diamond'], 2)}, Delta: {round(obj.resource_delta['diamond'], 2)}",
+                                           f"Iron: Level {obj.resource_levels['iron']}, Stage: {round(obj.resource_stage['iron'], 2)}, Delta: {round(obj.resource_delta['iron'], 2)}"
                                            ])
             elif isinstance(obj, Source):
                 self.objects[0].set_texts([f"Ресурс {self.game.get_resource_name(obj.res_id)}", f"ID: {obj._id}", f"Coords: {obj.x} {obj.y}",
@@ -112,6 +122,7 @@ class GameScreen(AbstractScreen):
                 self.objects[0].set_texts([f"Фабрика игрока {obj.username}", f"ID: {obj._id}", f"Coords: {obj.x} {obj.y}",
                                            f"Ресурс: {self.game.get_resource_name(obj.resource_id)}",
                                            f"Уровень: {obj.level}",
-                                            f"City id: {obj.city_id}", f"Source id: {obj.source_id}"])
+                                           f"PRICE UPGRADE: {self.game.get_factory_upgrade_price(obj.level)}",
+                                           f"City id: {obj.city_id}", f"Source id: {obj.source_id}"])
             else:
                 self.objects[0].set_texts(["Пустая клетка"])
