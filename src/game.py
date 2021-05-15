@@ -27,9 +27,24 @@ class Game(metaclass=Singleton):  # Singleton class
         self.balance = 0
         self.profit_per_sec = 0
         self.my_username = ""
+        self.cfg = {}
 
     def update(self):
-        self.balance += self.profit_per_sec // config.FPS
+        self.balance += self.profit_per_sec / config.FPS
+        for i in range(30):
+            for j in range(30):
+                if self.map[i][j] is None: continue
+
+                if isinstance(self.map[i][j], City):
+                    self.map[i][j].resource_stage["iron"] += self.map[i][j].resource_delta["iron"] / config.FPS
+                    self.map[i][j].resource_stage["gold"] += self.map[i][j].resource_delta["gold"] / config.FPS
+                    self.map[i][j].resource_stage["coal"] += self.map[i][j].resource_delta["coal"] / config.FPS
+                    self.map[i][j].resource_stage["diamond"] += self.map[i][j].resource_delta["diamond"] / config.FPS
+
+                if isinstance(self.map[i][j], Source):
+                    self.map[i][j].remain += self.map[i][j].delta
+
+
         self.current_screen.update()
 
     def render(self):
@@ -41,6 +56,8 @@ class Game(metaclass=Singleton):  # Singleton class
                 return user
 
     def handle_socket_update(self, data):
+        if self.api.game_id != data["_id"]:
+            return
         self.ref_code = data["ref_code"]
         me = self.get_me(data["users"])
         self.balance = me["balance"]
@@ -64,6 +81,7 @@ class Game(metaclass=Singleton):  # Singleton class
                                                                            factory["source_id"], factory["username"])
 
     def handle_update(self, data):
+        self.cfg = data["cfg"]
         if "ref_code" in data:
             self.ref_code = data["ref_code"]
         else:
@@ -87,6 +105,9 @@ class Game(metaclass=Singleton):  # Singleton class
             return "coal"
         else:
             return "diamond"
+
+    def get_factory_upgrade_price(self, lvl):
+        return self.cfg["factories"]["price_upgrades"]["level_" + str(lvl)]
 
     def progress_update(self, data):
         return
