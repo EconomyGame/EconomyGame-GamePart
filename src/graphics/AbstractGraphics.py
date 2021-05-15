@@ -6,6 +6,9 @@ class AbstractGraphics:
     class TextGUI(GUI):
         pass
 
+    class TextListGUI(GUI):
+        pass
+
     class ButtonGUI(GUI):
         pass
 
@@ -15,6 +18,9 @@ class AbstractGraphics:
     # create GUI
     def createTextGUI(self, x, y, text, color, size=100):
         return self.TextGUI()
+
+    def createTexListGUI(self, x, y, text_list, color, size=30):
+        return self.TextListGUI()
 
     def createButtonGUI(self, x, y, width, height, label, callback):
         return self.ButtonGUI()
@@ -41,4 +47,13 @@ class AbstractGraphics:
         pass
 
     def fill_screen(self, color):
+        pass
+
+    def draw_line(self, color, start_pos, end_pos):
+        pass
+
+    def draw_rect(self, color, x, y, width, height):
+        pass
+
+    def display_text(self, x, y, text, color):
         pass

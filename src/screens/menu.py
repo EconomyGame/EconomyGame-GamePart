@@ -1,4 +1,4 @@
-from . import AbstractScreen, Waiting
+from . import AbstractScreen, CreateScreen, JoinScreen
 import src.config as config
 
 
@@ -9,10 +9,10 @@ class Menu(AbstractScreen):
         self.set_gui()
 
     def _create_game(self):
-        self.game.current_screen = Waiting(self.game)
+        self.game.current_screen = CreateScreen(self.game)
 
     def _join_game(self):
-        print("JOINED")
+        self.game.current_screen = JoinScreen(self.game)
 
     def set_gui(self):
         self.objects.append(self.graphics.createTextGUI(300, 100, "Меню", config.MENU_TEXT_COLOR))

@@ -25,10 +25,53 @@ class PygameGraphics(AbstractGraphics):
         def __init__(self, screen, x, y, width, height, text, color, size=100):
             self.font = pygame.font.Font(config.TEXT_FONT, size)
             self.label = self.font.render(text, True, color)
+            self.text = text
+            self.color = color
             super().__init__(screen, x, y, width, height)
 
         def render(self):
             self.screen.blit(self.label, (self.x, self.y))
+
+        def set_text(self, text):
+            if text == self.text:
+                return
+            self.text = text
+            self.label = self.font.render(text, True, self.color)
+
+        def handle_click(self, pos_x, pos_y):
+            pass
+
+        def handle_key_down(self, event):
+            pass
+
+    class TextListGUI(GUI):
+
+        def __init__(self, screen, x, y, width, height, text_list, color, size):
+            self.color = color
+            self.size = size
+            self.texts = []
+            current_y = y
+            for text in text_list:
+                self.texts.append(PygameGraphics.TextGUI(screen, x, current_y, 0, 0, text, color, size))
+                current_y += 20
+            super().__init__(screen, x, y, width, height)
+
+        def set_texts(self, text_list):
+            if self.texts == text_list:
+                return
+            if len(self.texts) == len(text_list):
+                for i, text in enumerate(self.texts):
+                    text.set_text(text_list[i])
+                return
+            self.texts = []
+            current_y = self.y
+            for text in text_list:
+                self.texts.append(PygameGraphics.TextGUI(self.screen, self.x, current_y, 0, 0, text, self.color, self.size))
+                current_y += 20
+
+        def render(self):
+            for text in self.texts:
+                text.render()
 
         def handle_click(self, pos_x, pos_y):
             pass
@@ -96,6 +139,9 @@ class PygameGraphics(AbstractGraphics):
     def createTextGUI(self, x, y, text, color, size=100):
         return self.TextGUI(self._screen, x, y, 0, 0, text, color, size=size)
 
+    def createTexListGUI(self, x, y, text_list, color, size=30):
+        return self.TextListGUI(self._screen, x, y, 0, 0, text_list, color, size)
+
     def createButtonGUI(self, x, y, width, height, label, callback):
         return self.ButtonGUI(self._screen, x, y, width, height, label, callback)
 
@@ -107,6 +153,7 @@ class PygameGraphics(AbstractGraphics):
         self._screen = pygame.display.set_mode((width, height))
         self._timer = pygame.time.Clock()
         self.fps = 30
+        self.font = pygame.font.Font(config.TEXT_FONT, 30)
         super().__init__(width, height)
 
     def set_caption(self, caption: str):
@@ -133,3 +180,13 @@ class PygameGraphics(AbstractGraphics):
 
     def fill_screen(self, color):
         self._screen.fill(color)
+
+    def draw_line(self, color, start_pos, end_pos):
+        pygame.draw.line(self._screen, color, start_pos, end_pos)
+
+    def draw_rect(self, color, x, y, width, height):
+        pygame.draw.rect(self._screen, color, (x, y, width, height))
+
+    def display_text(self, x, y, text, color):
+        label = self.font.render(text, True, color)
+        self._screen.blit(label, (x, y))
