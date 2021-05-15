@@ -54,3 +54,6 @@ class AbstractGraphics:
 
     def draw_rect(self, color, x, y, width, height):
         pass
+
+    def display_text(self, x, y, text, color):
+        pass

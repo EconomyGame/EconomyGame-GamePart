@@ -8,16 +8,13 @@ class Api:
         self.game = game
         self.session_token = dict()
 
-    def callback(self, data):
-        self.game.handle_update(data)
-
     def _create_game(self, username, callback):
         try:
             d = requests.post("http://tp-project2021.herokuapp.com/api/v1/game_lobby/create_game",
                               json={"username": username}).json()
             (self.session_token[username], self.game_id, self.ref_code) = self.get_authorization_data(d)
             api = {"cfg": d["cfg"], "game": d["game"], "user": d["user"]}
-            self.callback(api)
+            self.game.handle_update(api)
             callback(api)
             return api
         except Exception as e:
@@ -35,7 +32,7 @@ class Api:
             d = requests.get("http://tp-project2021.herokuapp.com/api/v1/game_lobby/fetch_game",
                              headers={"Authorization":session_token, "Game":game_id}).json()
             api = {"game": d["game"], "user": d["user"]}
-            self.callback(api)
+            self.game.handle_update(api)
             callback(api)
             return api
         except Exception as e:
@@ -53,7 +50,7 @@ class Api:
             d = requests.get("http://tp-project2021.herokuapp.com/api/v1/game_lobby/update_ready",
                              headers={"Authorization":session_token, "Game":game_id}).json()
             api = {"game": d["game"], "user": d["user"]}
-            self.callback(api)
+            self.game.handle_update(api)
             callback(api)
             return api
         except Exception as e:
@@ -71,7 +68,7 @@ class Api:
             d = requests.get("http://tp-project2021.herokuapp.com/api/v1/game_lobby/leave_game",
                              headers={"Authorization":session_token, "Game":game_id}).json()
             api = {"game": d["game"]}
-            self.callback(api)
+            self.game.handle_update(api)
             callback(api)
             return api
         except Exception as e:
@@ -90,7 +87,7 @@ class Api:
                              params={"ref_code":ref_code, "username":username}).json()
             self.session_token[username] = d["user"]["session_token"]
             api = {"cfg": d["cfg"], "game": d["game"], "user": d["user"]}
-            self.callback(api)
+            self.game.handle_update(api)
             callback(api)
             return api
         except Exception as e:
@@ -112,7 +109,7 @@ class Api:
                 callback((False, api))
                 return (False, api)
             else:
-                self.callback(api)
+                self.game.progress_update(api)
                 callback((True, api))
                 self.test_city_id = api["game"]["cities"][0]["_id"]
                 self.test_source_id = api["game"]["sources"][0]["_id"]
@@ -136,7 +133,7 @@ class Api:
                               json={"resource_id": resource_id, "coords": coords},
                               headers={"Authorization":session_token, "Game":game_id}).json()
             api = d
-            self.callback(api)
+            self.game.progress_update(api)
             callback(api)
             self.test_factory_id = api["factory"]["_id"]
             return api
@@ -156,7 +153,7 @@ class Api:
                               json={"factory_id": factory_id, "city_id": city_id},
                               headers={"Authorization":session_token, "Game":game_id}).json()
             api = d
-            self.callback(api)
+            self.game.progress_update(api)
             callback(api)
             return api
         except Exception as e:
@@ -175,7 +172,7 @@ class Api:
                               json={"factory_id": factory_id, "source_id": source_id},
                               headers={"Authorization":session_token, "Game":game_id}).json()
             api = d
-            self.callback(api)
+            self.game.progress_update(api)
             callback(api)
             return api
         except Exception as e:
@@ -194,7 +191,7 @@ class Api:
                               json={"factory_id": factory_id},
                               headers={"Authorization":session_token, "Game":game_id}).json()
             api = d
-            self.callback(api)
+            self.game.progress_update(api)
             callback(api)
             return api
         except Exception as e:

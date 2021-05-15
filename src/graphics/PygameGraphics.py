@@ -153,6 +153,7 @@ class PygameGraphics(AbstractGraphics):
         self._screen = pygame.display.set_mode((width, height))
         self._timer = pygame.time.Clock()
         self.fps = 30
+        self.font = pygame.font.Font(config.TEXT_FONT, 30)
         super().__init__(width, height)
 
     def set_caption(self, caption: str):
@@ -185,3 +186,7 @@ class PygameGraphics(AbstractGraphics):
 
     def draw_rect(self, color, x, y, width, height):
         pygame.draw.rect(self._screen, color, (x, y, width, height))
+
+    def display_text(self, x, y, text, color):
+        label = self.font.render(text, True, color)
+        self._screen.blit(label, (x, y))
